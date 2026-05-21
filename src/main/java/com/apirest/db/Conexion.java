@@ -14,10 +14,9 @@ public class Conexion {
 	 
     // ── Parámetros de conexión ────────────────────────────────────
     // Formato: jdbc:postgresql://HOST:PUERTO/NOMBRE_BASE_DE_DATOS
-	private static final String URL = 
-		    "jdbc:postgresql://ep-solitary-glitter-aqn7c3za-pooler.c-8.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&channelBinding=require";
-	private static final String USER = "neondb_owner";
-	private static final String PASSWORD = "npg_lrM2msodNQ0w"; // <-- cambia si es
+	private static final String URL = System.getnv("DB_URL")
+	private static final String USER = ""DB_USER";
+	private static final String PASSWORD = "DB_PASS"; // <-- cambia si es
 
  
     /**
