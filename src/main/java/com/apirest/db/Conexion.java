@@ -3,22 +3,20 @@ package com.apirest.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
- 
+
 /**
  * Clase utilitaria para obtener conexiones a PostgreSQL.
  * Centraliza los parámetros de conexión en un solo lugar.
  * Uso: Connection con = Conexion.obtener();
  */
-
 public class Conexion {
-	 
+    
     // ── Parámetros de conexión ────────────────────────────────────
-    // Formato: jdbc:postgresql://HOST:PUERTO/NOMBRE_BASE_DE_DATOS
-	private static final String URL = System.getnv("DB_URL")
-	private static final String USER = ""DB_USER";
-	private static final String PASSWORD = "DB_PASS"; // <-- cambia si es
+    // Se leen desde variables de entorno definidas en Render
+    private static final String URL = System.getenv("DB_URL");
+    private static final String USER = System.getenv("DB_USER");
+    private static final String PASSWORD = System.getenv("DB_PASS");
 
- 
     /**
      * Retorna una nueva conexión abierta a PostgreSQL.
      * IMPORTANTE: el llamador es responsable de cerrarla con con.close().
@@ -26,18 +24,15 @@ public class Conexion {
      *   try (Connection con = Conexion.obtener()) { ... }
      */
     public static Connection obtener() throws SQLException {
-        // DriverManager busca el driver registrado para 'jdbc:postgresql'.
-        // El driver se registra automáticamente al incluirlo en el classpath (Maven).
-    	System.out.println(">>>>CONECTANDO A BD sistema_tickets...");
-    	try {
-    		Class.forName("org.postgresql.Driver");
-    	} catch(ClassNotFoundException e) {
-    		System.out.println("DRIVER NO ENCONTRADO");
-    		e.printStackTrace();
-    	}
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch(ClassNotFoundException e) {
+            System.out.println("DRIVER NO ENCONTRADO");
+            e.printStackTrace();
+        }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
- 
+
     /**
      * Verifica si la conexión funciona. Llama este método UNA vez
      * para confirmar que la configuración es correcta.
