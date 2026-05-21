@@ -1,5 +1,5 @@
 # Imagen base: Tomcat 10.1.36 con JDK 21
-FROM tomcat:10.1.36-jdk21-openjdk
+FROM tomcat:10.1.36-jdk21
 
 # Establecemos directorio de trabajo
 WORKDIR /usr/local/tomcat/webapps/
