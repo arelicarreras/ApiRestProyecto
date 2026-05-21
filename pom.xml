@@ -17,7 +17,6 @@
   </properties> 
  
   <dependencies> 
- 
     <!-- Jersey: servlet container para JAX-RS REST --> 
     <dependency> 
       <groupId>org.glassfish.jersey.containers</groupId> 
@@ -38,12 +37,13 @@
       <artifactId>jersey-media-json-jackson</artifactId> 
       <version>3.1.0</version> 
     </dependency> 
-    <!-- Jersey Media JSON: serializar objetos Java a JSON --> 
+
+    <!-- Jersey Media Multipart: soporte para archivos -->
     <dependency>
-    	<groupId>org.glassfish.jersey.media</groupId>
-    	<artifactId>jersey-media-multipart</artifactId>
-   		<version>3.1.0</version>
-	</dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+      <version>3.1.0</version>
+    </dependency>
  
     <!-- Jakarta Servlet API: provided = Tomcat ya la incluye --> 
     <dependency> 
@@ -53,21 +53,32 @@
       <scope>provided</scope> 
     </dependency> 
  
- <!-- Driver JDBC de PostgreSQL -->
-<!-- Permite a Java conectarse directamente a PostgreSQL -->
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <version>42.7.1</version>
-</dependency>
-<!-- Connection Pool: HikariCP -->
-<!-- Reutiliza conexiones para mejor rendimiento         -->
-<dependency>
-    <groupId>com.zaxxer</groupId>
-    <artifactId>HikariCP</artifactId>
-    <version>5.1.0</version>
-</dependency>
+    <!-- Driver JDBC de PostgreSQL -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.1</version>
+    </dependency>
 
+    <!-- Connection Pool: HikariCP -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>5.1.0</version>
+    </dependency>
   </dependencies> 
- 
+
+  <build>
+    <plugins>
+      <!-- Plugin de Maven para empaquetar WAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
