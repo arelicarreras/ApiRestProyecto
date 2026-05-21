@@ -52,5 +52,15 @@
         <url-pattern>/api/*</url-pattern>
 
     </servlet-mapping>
+    
+<welcome-file-list>
+    <welcome-file>login.jsp</welcome-file>
+    <welcome-file>menu.jsp</welcome-file>
+    <welcome-file>TicketAdjunto.jsp</welcome-file>
+    <welcome-file>Tickets.jsp</welcome-file>
+    <welcome-file>Timeline.jsp</welcome-file>
+    <welcome-file>Usuarios.jsp</welcome-file>
+</welcome-file-list>
+    
 
 </web-app>
