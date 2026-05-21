@@ -157,7 +157,7 @@ th, td{
 <script>
 
 const URL =
-"http://localhost:8080/ApiRestProyecto/api/timeline";
+"/api/timeline";
 
 
 // =====================================

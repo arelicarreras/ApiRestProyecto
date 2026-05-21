@@ -110,7 +110,7 @@ Listar Adjuntos
 <script>
 
 const URL =
-	"http://localhost:8080/ApiRestProyecto/api/adjuntos";
+	"/api/adjuntos";
 
 async function subir(){
 

@@ -200,10 +200,10 @@ button{
 <script>
 
 const URL_LOGIN =
-"http://localhost:8080/ApiRestProyecto/api/usuarios/login";
+"/api/usuarios/login";
 
 const URL_USUARIOS =
-"http://localhost:8080/ApiRestProyecto/api/usuarios";
+"/api/usuarios";
 
 
 // =====================================

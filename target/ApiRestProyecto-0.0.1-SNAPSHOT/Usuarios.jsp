@@ -165,7 +165,7 @@ onclick="eliminarUsuario()">
 <script>
 
 const URL =
-"http://localhost:8080/ApiRestProyecto/api/usuarios";
+"/api/usuarios";
 
 
 // ======================================
