@@ -89,8 +89,6 @@ button{
 
 		<h1>Sistema Login</h1>
 
-		<!-- BOTONES SUPERIORES -->
-
 		<div class="tabs">
 
 			<button
@@ -285,10 +283,14 @@ async function login(){
 		const usuario =
 		await respuesta.json();
 
+		// GUARDAR USUARIO LOGUEADO
+		localStorage.setItem(
+			"usuarioLogueado",
+			JSON.stringify(usuario)
+		);
+
 		alert(
-
 			"Bienvenido " +
-
 			usuario.nombre
 		);
 

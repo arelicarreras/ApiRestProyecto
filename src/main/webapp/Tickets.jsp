@@ -1,231 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Sistema Tickets</title>
-
-<style>
-
-body{
-    font-family: Arial;
-    background: #f4f6f9;
-    margin: 0;
-    padding: 30px;
-}
-
-.container{
-    width: 95%;
-    margin: auto;
-}
-
-.card{
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-
-h1{
-    color: #333;
-}
-
-input, select{
-    width: 250px;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-button{
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    margin: 3px;
-}
-
-.crear{
-    background: #007bff;
-}
-
-.listar{
-    background: #17a2b8;
-}
-
-.eliminar{
-    background: crimson;
-}
-
-.actualizar{
-    background: green;
-}
-
-table{
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th{
-    background: #007bff;
-    color: white;
-}
-
-th, td{
-    padding: 10px;
-    border: 1px solid #ccc;
-    text-align: center;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="card">
-
-        <h1>Sistema de Tickets</h1>
-
-        <form id="formTicket">
-
-            <div>
-                <label>Codigo Ticket</label><br>
-                <input type="text" id="codigo">
-            </div>
-
-            <div>
-                <label>Descripcion</label><br>
-                <input type="text" id="descripcion">
-            </div>
-
-            <div>
-                <label>Departamento</label><br>
-                <input type="text" id="departamento">
-            </div>
-
-            <div>
-
-                <label>Estado</label><br>
-
-                <select id="estado">
-
-                    <option value="CREADO">
-                        CREADO
-                    </option>
-
-                    <option value="ASIGNADO">
-                        ASIGNADO
-                    </option>
-
-                    <option value="VALIDACION">
-                        VALIDACION
-                    </option>
-
-                    <option value="DEVUELTO">
-                        DEVUELTO
-                    </option>
-
-                    <option value="RECHAZADO">
-                        RECHAZADO
-                    </option>
-
-                    <option value="FINALIZADO">
-                        FINALIZADO
-                    </option>
-
-                </select>
-
-            </div>
-
-            <button class="crear" type="submit">
-                Crear Ticket
-            </button>
-
-            <button
-            class="listar"
-            type="button"
-            onclick="cargarTickets()">
-
-                Listar Tickets
-
-            </button>
-
-            <button
-            class="actualizar"
-            type="button"
-            onclick="actualizarEstado()">
-
-                Actualizar Estado
-
-            </button>
-
-            <button
-            class="eliminar"
-            type="button"
-            onclick="eliminarManual()">
-
-                Eliminar Ticket
-
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- TABLA -->
-
-    <div
-    class="card"
-    id="tablaContainer"
-    style="display:none;">
-
-        <h2>Lista de Tickets</h2>
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>ID</th>
-                    <th>Codigo</th>
-                    <th>Descripcion</th>
-                    <th>Departamento</th>
-                    <th>Estado</th>
-                    <th>Creado Por</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Asignado A</th>
-                    <th>Fecha Creacion</th>
-                    <th>Fecha Cierre</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="tablaTickets">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
 <script>
 
 const URL =
 "/api/tickets";
+
+
+// =====================================
+// USUARIO LOGUEADO
+// =====================================
+
+const usuarioLogueado =
+JSON.parse(
+    localStorage.getItem("usuarioLogueado")
+);
 
 
 // =====================================
@@ -249,11 +35,11 @@ document.getElementById("formTicket")
             document.getElementById("estado").value,
 
         creadoPor:{
-            id:1
+            id: usuarioLogueado.id
         }
     };
 
-    await fetch(URL, {
+    const respuesta = await fetch(URL, {
 
         method:"POST",
 
@@ -264,8 +50,18 @@ document.getElementById("formTicket")
         body: JSON.stringify(ticket)
     });
 
-    alert("Ticket creado");
+    if(respuesta.ok){
+
+        alert("Ticket creado");
+
+        cargarTickets();
+
+    }else{
+
+        alert("Error creando ticket");
+    }
 });
+
 
 //=====================================
 //LISTAR
@@ -321,12 +117,16 @@ async function cargarTickets(){
          "</td>" +
 
          "<td>" +
-             t.fechaCreacion +
+             (t.fechaCreacion
+                 ? new Date(t.fechaCreacion)
+                    .toLocaleString("es-GT")
+                 : "") +
          "</td>" +
 
          "<td>" +
              (t.fechaCierre
-                 ? t.fechaCierre
+                 ? new Date(t.fechaCierre)
+                    .toLocaleString("es-GT")
                  : "Pendiente") +
          "</td>" +
 
@@ -411,11 +211,7 @@ async function actualizarEstado(){
                 descripcion:"Cambio de estado",
 
                 asignadoA:{
-                    id:1
-                },
-
-                creadoPor:{
-                    nombre:"Tecnico"
+                    id: usuarioLogueado.id
                 }
             })
         }
@@ -424,6 +220,8 @@ async function actualizarEstado(){
     if(respuesta.ok){
 
         alert("Estado actualizado");
+
+        cargarTickets();
 
     }else{
 
@@ -458,9 +256,8 @@ async function eliminarManual(){
     );
 
     alert("Ticket eliminado");
+
+    cargarTickets();
 }
 
 </script>
-
-</body>
-</html>
