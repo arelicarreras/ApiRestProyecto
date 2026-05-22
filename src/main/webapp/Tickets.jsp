@@ -3,9 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
-
 <title>Sistema Tickets</title>
 
 <style>
@@ -68,6 +66,10 @@ button{
     background: green;
 }
 
+.menu{
+    background:#343a40;
+}
+
 table{
     width: 100%;
     border-collapse: collapse;
@@ -96,6 +98,16 @@ th, td{
 
         <h1>Sistema de Tickets</h1>
 
+        <button
+        class="menu"
+        onclick="window.location.href='menu.jsp'">
+
+            Volver al Menu
+
+        </button>
+
+        <hr>
+
         <form id="formTicket">
 
             <div>
@@ -118,6 +130,47 @@ th, td{
                 <label>Estado</label><br>
 
                 <select id="estado">
+
+                    <option value="CREADO">
+                        CREADO
+                    </option>
+
+                    <option value="ASIGNADO">
+                        ASIGNADO
+                    </option>
+
+                    <option value="VALIDACION">
+                        VALIDACION
+                    </option>
+
+                    <option value="DEVUELTO">
+                        DEVUELTO
+                    </option>
+
+                    <option value="RECHAZADO">
+                        RECHAZADO
+                    </option>
+
+                    <option value="FINALIZADO">
+                        FINALIZADO
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- FILTRO -->
+
+            <div>
+
+                <label>Filtrar Estado</label><br>
+
+                <select id="filtroEstado">
+
+                    <option value="TODOS">
+                        TODOS
+                    </option>
 
                     <option value="CREADO">
                         CREADO
@@ -226,6 +279,10 @@ th, td{
 
 <script>
 
+// =====================================
+// URL RENDER
+// =====================================
+
 const URL =
 "/api/tickets";
 
@@ -234,19 +291,45 @@ const URL =
 // USUARIO LOGUEADO
 // =====================================
 
-const usuarioLogueado =
+const usuario =
 JSON.parse(
-    localStorage.getItem("usuarioLogueado")
+	localStorage.getItem("usuarioLogueado")
 );
 
+if(!usuario){
 
-// SI NO HAY SESION
+	alert("Debe iniciar sesion");
 
-if(!usuarioLogueado){
+	window.location.href =
+	"login.jsp";
+}
 
-    alert("Debe iniciar sesion");
 
-    window.location.href = "login.jsp";
+// =====================================
+// FORMATO FECHA
+// =====================================
+
+function formatearFecha(fecha){
+
+    if(!fecha){
+
+        return "Pendiente";
+    }
+
+    return new Date(fecha)
+    .toLocaleString(
+        "es-GT",
+        {
+
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+        }
+    );
 }
 
 
@@ -271,7 +354,7 @@ document.getElementById("formTicket")
             document.getElementById("estado").value,
 
         creadoPor:{
-            id: usuarioLogueado.id
+            id: usuario.id
         }
     };
 
@@ -309,9 +392,50 @@ async function cargarTickets(){
 
  const tickets = await respuesta.json();
 
+ const filtro =
+ document.getElementById("filtroEstado").value;
+
  let html = "";
 
- tickets.forEach(function(t){
+ let ticketsFiltrados = tickets;
+
+ // =====================================
+ // FILTRO
+ // =====================================
+
+ if(filtro != "TODOS"){
+
+     ticketsFiltrados =
+     tickets.filter(function(t){
+
+         return t.estado == filtro;
+     });
+ }
+
+ // =====================================
+ // SIN DATOS
+ // =====================================
+
+ if(ticketsFiltrados.length == 0){
+
+     html =
+
+     "<tr>" +
+
+        "<td colspan='11'>" +
+
+            "No hay tickets" +
+
+        "</td>" +
+
+     "</tr>";
+ }
+
+ // =====================================
+ // TABLA
+ // =====================================
+
+ ticketsFiltrados.forEach(function(t){
 
      html +=
      "<tr>" +
@@ -351,17 +475,15 @@ async function cargarTickets(){
          "</td>" +
 
          "<td>" +
-             (t.fechaCreacion
-                 ? new Date(t.fechaCreacion)
-                     .toLocaleString("es-GT")
-                 : "") +
+             formatearFecha(
+                t.fechaCreacion
+             ) +
          "</td>" +
 
          "<td>" +
-             (t.fechaCierre
-                 ? new Date(t.fechaCierre)
-                     .toLocaleString("es-GT")
-                 : "Pendiente") +
+             formatearFecha(
+                t.fechaCierre
+             ) +
          "</td>" +
 
      "</tr>";
@@ -445,7 +567,11 @@ async function actualizarEstado(){
                 descripcion:"Cambio de estado",
 
                 asignadoA:{
-                    id: usuarioLogueado.id
+                    id: usuario.id
+                },
+
+                creadoPor:{
+                    nombre: usuario.nombre
                 }
             })
         }
@@ -482,16 +608,23 @@ async function eliminarManual(){
         return;
     }
 
-    await fetch(
+    const respuesta = await fetch(
         URL + "/" + codigo,
         {
             method:"DELETE"
         }
     );
 
-    alert("Ticket eliminado");
+    if(respuesta.ok){
 
-    cargarTickets();
+        alert("Ticket eliminado");
+
+        cargarTickets();
+
+    }else{
+
+        alert("Error eliminando");
+    }
 }
 
 </script>

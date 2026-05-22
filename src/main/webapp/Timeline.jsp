@@ -58,6 +58,10 @@ button{
     background: crimson;
 }
 
+.menu{
+    background:#343a40;
+}
+
 table{
     width: 100%;
     border-collapse: collapse;
@@ -86,6 +90,16 @@ th, td{
     <div class="card">
 
         <h1>Timeline Tickets</h1>
+
+        <button
+        class="menu"
+        onclick="window.location.href='menu.jsp'">
+
+            Volver al Menu
+
+        </button>
+
+        <hr>
 
         <div>
 
@@ -156,8 +170,58 @@ th, td{
 
 <script>
 
+// =====================================
+// URL RENDER
+// =====================================
+
 const URL =
 "/api/timeline";
+
+
+// =====================================
+// VALIDAR SESION
+// =====================================
+
+const usuario =
+JSON.parse(
+	localStorage.getItem("usuarioLogueado")
+);
+
+if(!usuario){
+
+	alert("Debe iniciar sesion");
+
+	window.location.href =
+	"login.jsp";
+}
+
+
+// =====================================
+// FORMATEAR FECHA
+// =====================================
+
+function formatearFecha(fecha){
+
+    if(!fecha){
+
+        return "";
+    }
+
+    return new Date(fecha)
+    .toLocaleString(
+        "es-GT",
+        {
+
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+        }
+    );
+}
 
 
 // =====================================
@@ -178,18 +242,14 @@ async function cargarTimeline(){
 
     try{
 
-        // URL CORRECTA
         const respuesta =
         await fetch(URL + "/" + codigo);
 
         const timeline =
         await respuesta.json();
 
-        console.log(timeline);
-
         let html = "";
 
-        // SIN REGISTROS
         if(timeline.length == 0){
 
             html =
@@ -205,14 +265,12 @@ async function cargarTimeline(){
             "</tr>";
         }
 
-        // RECORRER DATOS
         timeline.forEach(function(t){
 
             html +=
 
             "<tr>" +
 
-                // ID
                 "<td>" +
 
                     (
@@ -223,7 +281,6 @@ async function cargarTimeline(){
 
                 "</td>" +
 
-                // CODIGO
                 "<td>" +
 
                     (
@@ -237,7 +294,6 @@ async function cargarTimeline(){
 
                 "</td>" +
 
-                // ESTADO
                 "<td>" +
 
                     (
@@ -248,7 +304,6 @@ async function cargarTimeline(){
 
                 "</td>" +
 
-                // ACTOR
                 "<td>" +
 
                     (
@@ -257,12 +312,11 @@ async function cargarTimeline(){
 
                         ? t.actor.nombre
 
-                        : ""
+                        : "Sin actor"
                     ) +
 
                 "</td>" +
 
-                // OBSERVACION
                 "<td>" +
 
                     (
@@ -273,17 +327,10 @@ async function cargarTimeline(){
 
                 "</td>" +
 
-                // FECHA
                 "<td>" +
 
-                    (
-                        t.fechaEvento != null
-
-                        ? new Date(
-                            t.fechaEvento
-                          ).toLocaleString()
-
-                        : ""
+                    formatearFecha(
+                        t.fechaEvento
                     ) +
 
                 "</td>" +
@@ -319,6 +366,7 @@ async function eliminarEvento(){
         return;
     }
 
+    const respuesta =
     await fetch(
 
         URL + "/" + codigo,
@@ -328,9 +376,16 @@ async function eliminarEvento(){
         }
     );
 
-    alert("Timeline eliminado");
+    if(respuesta.ok){
 
-    cargarTimeline();
+        alert("Timeline eliminado");
+
+        cargarTimeline();
+
+    }else{
+
+        alert("Error eliminando timeline");
+    }
 }
 
 </script>

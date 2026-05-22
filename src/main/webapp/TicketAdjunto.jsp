@@ -30,11 +30,23 @@ input{
 
 button{
 	padding:10px;
-	background:#007bff;
 	color:white;
 	border:none;
 	border-radius:5px;
 	cursor:pointer;
+	margin:5px;
+}
+
+.subir{
+	background:#007bff;
+}
+
+.listar{
+	background:#17a2b8;
+}
+
+.menu{
+	background:#343a40;
 }
 
 table{
@@ -64,6 +76,18 @@ th,td{
 
 <h1>Subir Archivo</h1>
 
+<!-- BOTON MENU -->
+
+<button
+class="menu"
+onclick="window.location.href='menu.jsp'">
+
+	Volver al Menu
+
+</button>
+
+<hr>
+
 <input
 type="number"
 id="ticketId"
@@ -73,15 +97,19 @@ placeholder="ID Ticket">
 type="file"
 id="archivo">
 
-<button onclick="subir()">
+<button
+class="subir"
+onclick="subir()">
 
-Subir Archivo
+	Subir Archivo
 
 </button>
 
-<button onclick="listar()">
+<button
+class="listar"
+onclick="listar()">
 
-Listar Adjuntos
+	Listar Adjuntos
 
 </button>
 
@@ -109,8 +137,17 @@ Listar Adjuntos
 
 <script>
 
+// =====================================
+// URL RENDER
+// =====================================
+
 const URL =
-	"/api/adjuntos";
+"/api/adjuntos";
+
+
+// =====================================
+// SUBIR
+// =====================================
 
 async function subir(){
 
@@ -119,6 +156,13 @@ async function subir(){
 
 	const ticketId =
 	document.getElementById("ticketId").value;
+
+	if(!archivo || ticketId == ""){
+
+		alert("Seleccione archivo y ticket");
+
+		return;
+	}
 
 	const formData =
 	new FormData();
@@ -148,13 +192,21 @@ async function subir(){
 
 		alert("Archivo subido");
 
-	}else{
-		const texto =
-			await respuesta.text();
+		listar();
 
-			alert(texto);
+	}else{
+
+		const texto =
+		await respuesta.text();
+
+		alert(texto);
 	}
 }
+
+
+// =====================================
+// LISTAR
+// =====================================
 
 async function listar(){
 
@@ -175,7 +227,7 @@ async function listar(){
 		"<td>" + a.id + "</td>" +
 
 		"<td>" +
-		a.nombreArchivo +
+		a.nombreOriginal +
 		"</td>" +
 
 		"<td>" +
@@ -183,7 +235,9 @@ async function listar(){
 		"</td>" +
 
 		"<td>" +
-		a.ticket.codigo +
+		(a.ticket
+			? a.ticket.codigo
+			: "") +
 		"</td>" +
 
 		"</tr>";

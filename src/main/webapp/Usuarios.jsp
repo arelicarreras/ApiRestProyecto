@@ -50,6 +50,10 @@ button{
 	background:crimson;
 }
 
+.menu{
+	background:#343a40;
+}
+
 table{
 	width:100%;
 	border-collapse:collapse;
@@ -76,6 +80,18 @@ th,td{
 <div class="card">
 
 <h1>Gestion Usuarios</h1>
+
+<!-- BOTON MENU -->
+
+<button
+class="menu"
+onclick="window.location.href='menu.jsp'">
+
+	Volver al Menu
+
+</button>
+
+<hr>
 
 <input
 type="number"
@@ -164,8 +180,30 @@ onclick="eliminarUsuario()">
 
 <script>
 
+// ======================================
+// URL RENDER
+// ======================================
+
 const URL =
 "/api/usuarios";
+
+
+// ======================================
+// VALIDAR SESION
+// ======================================
+
+const usuario =
+JSON.parse(
+	localStorage.getItem("usuarioLogueado")
+);
+
+if(!usuario){
+
+	alert("Debe iniciar sesion");
+
+	window.location.href =
+	"login.jsp";
+}
 
 
 // ======================================
@@ -174,36 +212,60 @@ const URL =
 
 async function listar(){
 
-	const respuesta =
-	await fetch(URL);
+	try{
 
-	const datos =
-	await respuesta.json();
+		const respuesta =
+		await fetch(URL);
 
-	let html = "";
+		const datos =
+		await respuesta.json();
 
-	datos.forEach(function(u){
+		let html = "";
 
-		html +=
+		if(datos.length == 0){
 
-		"<tr>" +
+			html =
 
-		"<td>" + u.id + "</td>" +
+			"<tr>" +
 
-		"<td>" + u.nombre + "</td>" +
+				"<td colspan='5'>" +
 
-		"<td>" + u.correo + "</td>" +
+					"No hay usuarios" +
 
-		"<td>" + u.departamento + "</td>" +
+				"</td>" +
 
-		"<td>" + u.rol + "</td>" +
+			"</tr>";
+		}
 
-		"</tr>";
-	});
+		datos.forEach(function(u){
 
-	document
-	.getElementById("tabla")
-	.innerHTML = html;
+			html +=
+
+			"<tr>" +
+
+			"<td>" + u.id + "</td>" +
+
+			"<td>" + u.nombre + "</td>" +
+
+			"<td>" + u.correo + "</td>" +
+
+			"<td>" + u.departamento + "</td>" +
+
+			"<td>" + u.rol + "</td>" +
+
+			"</tr>";
+		});
+
+		document
+		.getElementById("tabla")
+		.innerHTML = html;
+
+	}catch(error){
+
+		console.log(error);
+
+		alert("Error listando usuarios");
+	}
 }
 
 
@@ -216,7 +278,14 @@ async function actualizar(){
 	const id =
 	document.getElementById("id").value;
 
-	const usuario = {
+	if(id == ""){
+
+		alert("Ingrese ID");
+
+		return;
+	}
+
+	const usuarioActualizar = {
 
 		nombre:
 		document.getElementById("nombre").value,
@@ -231,31 +300,40 @@ async function actualizar(){
 		document.getElementById("rol").value
 	};
 
-	const respuesta =
-	await fetch(
+	try{
 
-		URL + "/" + id,
+		const respuesta =
+		await fetch(
 
-		{
-			method:"PUT",
+			URL + "/" + id,
 
-			headers:{
-				"Content-Type":"application/json"
-			},
+			{
+				method:"PUT",
 
-			body: JSON.stringify(usuario)
+				headers:{
+					"Content-Type":"application/json"
+				},
+
+				body: JSON.stringify(usuarioActualizar)
+			}
+		);
+
+		if(respuesta.ok){
+
+			alert("Usuario actualizado");
+
+			listar();
+
+		}else{
+
+			alert("Error actualizando usuario");
 		}
-	);
 
-	if(respuesta.ok){
+	}catch(error){
 
-		alert("Usuario actualizado");
+		console.log(error);
 
-		listar();
-
-	}else{
-
-		alert("Error actualizando usuario");
+		alert("Error del sistema");
 	}
 }
 
@@ -269,25 +347,41 @@ async function eliminarUsuario(){
 	const id =
 	document.getElementById("id").value;
 
-	const respuesta =
-	await fetch(
+	if(id == ""){
 
-		URL + "/" + id,
+		alert("Ingrese ID");
 
-		{
-			method:"DELETE"
+		return;
+	}
+
+	try{
+
+		const respuesta =
+		await fetch(
+
+			URL + "/" + id,
+
+			{
+				method:"DELETE"
+			}
+		);
+
+		if(respuesta.ok){
+
+			alert("Usuario eliminado");
+
+			listar();
+
+		}else{
+
+			alert("Error eliminando usuario");
 		}
-	);
 
-	if(respuesta.ok){
+	}catch(error){
 
-		alert("Usuario eliminado");
+		console.log(error);
 
-		listar();
-
-	}else{
-
-		alert("Error eliminando usuario");
+		alert("Error del sistema");
 	}
 }
 
@@ -295,4 +389,3 @@ async function eliminarUsuario(){
 
 </body>
 </html>
-

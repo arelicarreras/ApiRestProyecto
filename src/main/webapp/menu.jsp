@@ -34,6 +34,14 @@ h1{
 	margin-bottom:30px;
 }
 
+.usuarioInfo{
+	background:#e9ecef;
+	padding:15px;
+	border-radius:10px;
+	margin-bottom:25px;
+	font-size:16px;
+}
+
 .grid{
 	display:grid;
 	grid-template-columns:1fr 1fr;
@@ -88,6 +96,23 @@ button:hover{
 	<div class="card">
 
 		<h1>Menu Principal</h1>
+
+		<div class="usuarioInfo">
+
+			<b>Usuario:</b>
+			<span id="nombreUsuario"></span>
+
+			<br><br>
+
+			<b>Correo:</b>
+			<span id="correoUsuario"></span>
+
+			<br><br>
+
+			<b>Rol:</b>
+			<span id="rolUsuario"></span>
+
+		</div>
 
 		<div class="grid">
 
@@ -153,8 +178,61 @@ button:hover{
 
 <script>
 
+// =====================================
+// USUARIO LOGUEADO
+// =====================================
+
+const usuario =
+JSON.parse(
+	localStorage.getItem("usuarioLogueado")
+);
+
+
+// =====================================
+// VALIDAR SESION
+// =====================================
+
+if(!usuario){
+
+	alert("Debe iniciar sesion");
+
+	window.location.href =
+	"login.jsp";
+}
+
+
+// =====================================
+// MOSTRAR DATOS
+// =====================================
+
+document.getElementById(
+	"nombreUsuario"
+).innerHTML =
+usuario.nombre;
+
+document.getElementById(
+	"correoUsuario"
+).innerHTML =
+usuario.correo;
+
+document.getElementById(
+	"rolUsuario"
+).innerHTML =
+usuario.rol;
+
+
+// =====================================
+// LOGOUT
+// =====================================
+
 function logout(){
 
+	// ELIMINAR SESION
+	localStorage.removeItem(
+		"usuarioLogueado"
+	);
+
+	// REDIRECCIONAR
 	window.location.href =
 	"login.jsp";
 }

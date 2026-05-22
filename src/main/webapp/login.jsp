@@ -56,6 +56,18 @@ button{
 	background: #28a745;
 }
 
+.recuperar{
+	background: #fd7e14;
+}
+
+.guardar{
+	background: #28a745;
+}
+
+.cerrar{
+	background: crimson;
+}
+
 #registroForm{
 	display: none;
 }
@@ -77,6 +89,24 @@ button{
 	color:white;
 }
 
+.modal{
+	display:none;
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:rgba(0,0,0,0.5);
+}
+
+.modal-content{
+	background:white;
+	width:400px;
+	margin:100px auto;
+	padding:20px;
+	border-radius:10px;
+}
+
 </style>
 
 </head>
@@ -88,6 +118,8 @@ button{
 	<div class="card">
 
 		<h1>Sistema Login</h1>
+
+		<!-- BOTONES SUPERIORES -->
 
 		<div class="tabs">
 
@@ -133,6 +165,17 @@ button{
 			onclick="login()">
 
 				Ingresar
+
+			</button>
+
+
+			<!-- OLVIDE PASSWORD -->
+
+			<button
+			class="recuperar"
+			onclick="abrirModal()">
+
+				Olvide mi Contraseña
 
 			</button>
 
@@ -195,7 +238,52 @@ button{
 
 </div>
 
+
+<!-- MODAL PASSWORD -->
+
+<div
+class="modal"
+id="modalPassword">
+
+	<div class="modal-content">
+
+		<h2>Recuperar Contraseña</h2>
+
+		<input
+		type="email"
+		id="correoRecuperar"
+		placeholder="Ingrese su correo">
+
+		<input
+		type="password"
+		id="nuevaPassword"
+		placeholder="Nueva contraseña">
+
+		<button
+		class="guardar"
+		onclick="recuperarPassword()">
+
+			Guardar Contraseña
+
+		</button>
+
+		<button
+		class="cerrar"
+		onclick="cerrarModal()">
+
+			Cerrar
+
+		</button>
+
+	</div>
+
+</div>
+
 <script>
+
+// =====================================
+// URLS RENDER
+// =====================================
 
 const URL_LOGIN =
 "/api/usuarios/login";
@@ -245,6 +333,30 @@ function mostrarRegistro(){
 
 
 // =====================================
+// ABRIR MODAL
+// =====================================
+
+function abrirModal(){
+
+	document.getElementById(
+		"modalPassword"
+	).style.display = "block";
+}
+
+
+// =====================================
+// CERRAR MODAL
+// =====================================
+
+function cerrarModal(){
+
+	document.getElementById(
+		"modalPassword"
+	).style.display = "none";
+}
+
+
+// =====================================
 // LOGIN
 // =====================================
 
@@ -283,14 +395,16 @@ async function login(){
 		const usuario =
 		await respuesta.json();
 
-		// GUARDAR USUARIO LOGUEADO
+		// GUARDAR SESION
 		localStorage.setItem(
 			"usuarioLogueado",
 			JSON.stringify(usuario)
 		);
 
 		alert(
+
 			"Bienvenido " +
+
 			usuario.nombre
 		);
 
@@ -356,6 +470,109 @@ async function registrar(){
 	}else{
 
 		alert("Error registrando usuario");
+	}
+}
+
+
+// =====================================
+// RECUPERAR PASSWORD
+// =====================================
+
+async function recuperarPassword(){
+
+	const correo =
+	document.getElementById(
+		"correoRecuperar"
+	).value;
+
+	const nuevaPassword =
+	document.getElementById(
+		"nuevaPassword"
+	).value;
+
+	if(correo == "" || nuevaPassword == ""){
+
+		alert(
+			"Complete todos los campos"
+		);
+
+		return;
+	}
+
+	try{
+
+		// BUSCAR USUARIOS
+		const respuestaUsuarios =
+		await fetch(URL_USUARIOS);
+
+		const usuarios =
+		await respuestaUsuarios.json();
+
+		// BUSCAR CORREO
+		const usuario =
+		usuarios.find(function(u){
+
+			return u.correo == correo;
+		});
+
+		if(!usuario){
+
+			alert("Correo no encontrado");
+
+			return;
+		}
+
+		// ACTUALIZAR PASSWORD
+		const respuesta =
+		await fetch(
+
+			URL_USUARIOS + "/" + usuario.id,
+
+			{
+
+				method:"PUT",
+
+				headers:{
+					"Content-Type":"application/json"
+				},
+
+				body: JSON.stringify({
+
+					nombre: usuario.nombre,
+
+					correo: usuario.correo,
+
+					departamento:
+					usuario.departamento,
+
+					rol: usuario.rol,
+
+					password:
+					nuevaPassword
+				})
+			}
+		);
+
+		if(respuesta.ok){
+
+			alert(
+				"Contraseña actualizada"
+			);
+
+			cerrarModal();
+
+		}else{
+
+			alert(
+				"Error actualizando contraseña"
+			);
+		}
+
+	}catch(error){
+
+		console.log(error);
+
+		alert("Error del sistema");
 	}
 }
 

@@ -73,7 +73,19 @@ public class UsuarioResource {
                 .entity("{\"error\":\"No se pudo actualizar\"}")
                 .build();
     }
+    @PUT
+    @Path("/password/{correo}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response cambiarPassword(@PathParam("correo")String correo,String nuevaPassword){
+        boolean ok = dao.cambiarPassword(correo, nuevaPassword);
+        if(ok){return Response.ok().build();
 
+        }else{
+            return Response.status(500)
+            .build();
+        }
+    }
+    
     @DELETE
     @Path("/{id}")
     public Response eliminar(@PathParam("id") int id) {

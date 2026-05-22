@@ -119,20 +119,33 @@ public class UsuarioDAO {
 		 return U; 
 		 }	
 	public boolean actualizar(int id, Usuario U) {
-		 String sql = "UPDATE public.usuarios SET nombre=?, correo=?, departamento=?, rol=? WHERE id=?";
+		 String sql = "UPDATE public.usuarios SET nombre=?, correo=?, password=?, departamento=?, rol=? WHERE id=?";
 		 try (Connection con = Conexion.obtener();
 		 PreparedStatement ps = con.prepareStatement(sql)) {
 			 ps.setString(1, U.getNombre());
 			 ps.setString(2, U.getCorreo());
-			 ps.setString(3, U.getDepartamento());
-			 ps.setString(4, U.getRol());
-		     ps.setInt(5, id);
+			 ps.setString(3, encriptar(U.getPassword()));
+			 ps.setString(4, U.getDepartamento());
+			 ps.setString(5, U.getRol());
+		     ps.setInt(6, id);
 		 return ps.executeUpdate() > 0; 
 		 } catch (SQLException e) {
 		 e.printStackTrace();
 		 return false;
 		 }
 		 }
+	public boolean cambiarPassword(String correo,String nuevaPassword) {
+	    String sql ="UPDATE usuarios SET password=? WHERE correo=?";
+	    try (Connection con =Conexion.obtener();
+	        PreparedStatement ps =con.prepareStatement(sql)) {
+	        ps.setString(1,encriptar(nuevaPassword));
+	        ps.setString(2, correo);
+	        return ps.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 	public boolean eliminar(int id) {
 	    String sql = "DELETE FROM usuarios WHERE id=?";
 	    try (Connection con = Conexion.obtener();
