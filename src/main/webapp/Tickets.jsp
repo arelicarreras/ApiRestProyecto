@@ -390,7 +390,6 @@ document.getElementById("formTicket")
 // =====================================
 // LISTAR
 // =====================================
-
 async function cargarTickets(){
 
  const respuesta = await fetch(URL);
@@ -493,7 +492,6 @@ async function cargarTickets(){
 // =====================================
 // ACTUALIZAR ESTADO
 // =====================================
-
 async function actualizarEstado(){
 
     const codigo =
@@ -553,40 +551,54 @@ async function actualizarEstado(){
         return;
     }
 
-    const respuesta = await fetch(
+    try{
 
-        URL + "/" + codigo + "/" + endpoint,
+        const respuesta = await fetch(
 
-        {
+            URL + "/" + codigo + "/" + endpoint,
 
-            method:"PUT",
+            {
 
-            headers:{
-                "Content-Type":"application/json"
-            },
+                method:"PUT",
 
-            body: JSON.stringify({
+                headers:{
+                    "Content-Type":"application/json"
+                },
 
-                descripcion: descripcion,
+                body: JSON.stringify({
 
-                asignadoA:{
-                    id: usuario.id
-                }
-            })
+                    descripcion: descripcion,
+
+                    asignadoA:{
+                        id: usuario.id
+                    },
+
+                    creadoPor:{
+                        nombre: usuario.nombre
+                    }
+                })
+            }
+        );
+
+        if(respuesta.ok){
+
+            alert("Estado actualizado");
+
+            cargarTickets();
+
+        }else{
+
+            const error =
+            await respuesta.text();
+
+            alert(error);
         }
-    );
 
-    if(respuesta.ok){
+    }catch(error){
 
-        alert("Estado actualizado");
+        console.log(error);
 
-        cargarTickets();
-
-    }else{
-
-        const error = await respuesta.text();
-
-        alert(error);
+        alert("Error actualizando estado");
     }
 }
 
