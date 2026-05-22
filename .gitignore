@@ -1,8 +1,5 @@
 # Maven
-target/*
-
-# PERMITIR EL WAR
-!target/*.war
+target/
 
 # Eclipse
 .classpath
