@@ -108,7 +108,7 @@ th, td{
             <input
             type="text"
             id="codigo"
-            placeholder="TK-123456">
+            placeholder="TKT-123456">
 
         </div>
 
@@ -366,25 +366,34 @@ async function eliminarEvento(){
         return;
     }
 
-    const respuesta =
-    await fetch(
+    try{
 
-        URL + "/" + codigo,
+        const respuesta =
+        await fetch(
 
-        {
-            method:"DELETE"
+            URL + "/" + codigo,
+
+            {
+                method:"DELETE"
+            }
+        );
+
+        if(respuesta.ok){
+
+            alert("Timeline eliminado");
+
+            cargarTimeline();
+
+        }else{
+
+            alert("Error eliminando timeline");
         }
-    );
 
-    if(respuesta.ok){
+    }catch(error){
 
-        alert("Timeline eliminado");
+        console.log(error);
 
-        cargarTimeline();
-
-    }else{
-
-        alert("Error eliminando timeline");
+        alert("Error del sistema");
     }
 }
 

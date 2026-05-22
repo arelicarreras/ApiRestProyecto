@@ -112,7 +112,11 @@ th, td{
 
             <div>
                 <label>Codigo Ticket</label><br>
-                <input type="text" id="codigo">
+
+                <input
+                type="text"
+                id="codigo"
+                placeholder="TKT-123456">
             </div>
 
             <div>
@@ -288,7 +292,7 @@ const URL =
 
 
 // =====================================
-// USUARIO LOGUEADO
+// VALIDAR SESION
 // =====================================
 
 const usuario =
@@ -306,7 +310,7 @@ if(!usuario){
 
 
 // =====================================
-// FORMATO FECHA
+// FORMATEAR FECHA
 // =====================================
 
 function formatearFecha(fecha){
@@ -358,7 +362,8 @@ document.getElementById("formTicket")
         }
     };
 
-    const respuesta = await fetch(URL, {
+    const respuesta =
+    await fetch(URL, {
 
         method:"POST",
 
@@ -399,10 +404,6 @@ async function cargarTickets(){
 
  let ticketsFiltrados = tickets;
 
- // =====================================
- // FILTRO
- // =====================================
-
  if(filtro != "TODOS"){
 
      ticketsFiltrados =
@@ -411,10 +412,6 @@ async function cargarTickets(){
          return t.estado == filtro;
      });
  }
-
- // =====================================
- // SIN DATOS
- // =====================================
 
  if(ticketsFiltrados.length == 0){
 
@@ -430,10 +427,6 @@ async function cargarTickets(){
 
      "</tr>";
  }
-
- // =====================================
- // TABLA
- // =====================================
 
  ticketsFiltrados.forEach(function(t){
 
@@ -509,9 +502,19 @@ async function actualizarEstado(){
     const estado =
         document.getElementById("estado").value;
 
+    const descripcion =
+        document.getElementById("descripcion").value;
+
     if(codigo == ""){
 
         alert("Ingrese codigo");
+
+        return;
+    }
+
+    if(descripcion == ""){
+
+        alert("Ingrese descripcion");
 
         return;
     }
@@ -564,14 +567,10 @@ async function actualizarEstado(){
 
             body: JSON.stringify({
 
-                descripcion:"Cambio de estado",
+                descripcion: descripcion,
 
                 asignadoA:{
                     id: usuario.id
-                },
-
-                creadoPor:{
-                    nombre: usuario.nombre
                 }
             })
         }
@@ -608,8 +607,11 @@ async function eliminarManual(){
         return;
     }
 
-    const respuesta = await fetch(
+    const respuesta =
+    await fetch(
+
         URL + "/" + codigo,
+
         {
             method:"DELETE"
         }

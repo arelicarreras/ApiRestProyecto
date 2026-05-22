@@ -28,6 +28,23 @@ CREATE TABLE ticket (
 
 
 
+CREATE SEQUENCE ticket_codigo_seq START 1;
+
+CREATE OR REPLACE FUNCTION generar_codigo_ticket()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.codigo := 'TKT-' || LPAD(nextval('ticket_codigo_seq')::TEXT, 4, '0');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_codigo_ticket
+BEFORE INSERT ON ticket
+FOR EACH ROW
+EXECUTE FUNCTION generar_codigo_ticket();
+
+
+
 CREATE TABLE ticket_adjuntos (
     id SERIAL PRIMARY KEY,
     ticket INT NOT NULL,

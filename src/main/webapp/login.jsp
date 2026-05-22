@@ -119,8 +119,6 @@ button{
 
 		<h1>Sistema Login</h1>
 
-		<!-- BOTONES SUPERIORES -->
-
 		<div class="tabs">
 
 			<button
@@ -167,9 +165,6 @@ button{
 				Ingresar
 
 			</button>
-
-
-			<!-- OLVIDE PASSWORD -->
 
 			<button
 			class="recuperar"
@@ -363,58 +358,81 @@ function cerrarModal(){
 async function login(){
 
 	const correo =
-	document.getElementById("correo").value;
+	document.getElementById("correo")
+	.value.trim();
 
 	const password =
-	document.getElementById("password").value;
+	document.getElementById("password")
+	.value.trim();
 
-	const respuesta =
-	await fetch(
+	if(correo == "" || password == ""){
 
-		URL_LOGIN,
+		alert(
+			"Complete todos los campos"
+		);
 
-		{
+		return;
+	}
 
-			method:"POST",
+	try{
 
-			headers:{
-				"Content-Type":"application/json"
-			},
+		const respuesta =
+		await fetch(
 
-			body: JSON.stringify({
+			URL_LOGIN,
 
-				correo: correo,
+			{
 
-				password: password
-			})
+				method:"POST",
+
+				headers:{
+					"Content-Type":"application/json"
+				},
+
+				body: JSON.stringify({
+
+					correo: correo,
+
+					password: password
+				})
+			}
+		);
+
+		if(respuesta.ok){
+
+			const usuario =
+			await respuesta.json();
+
+			localStorage.setItem(
+
+				"usuarioLogueado",
+
+				JSON.stringify(usuario)
+			);
+
+			alert(
+
+				"Bienvenido " +
+
+				usuario.nombre
+			);
+
+			window.location.href =
+			"menu.jsp";
+
+		}else{
+
+			alert(
+				"Correo o password incorrectos"
+			);
 		}
-	);
 
-	if(respuesta.ok){
+	}catch(error){
 
-		const usuario =
-		await respuesta.json();
-
-		// GUARDAR SESION
-		localStorage.setItem(
-			"usuarioLogueado",
-			JSON.stringify(usuario)
-		);
+		console.log(error);
 
 		alert(
-
-			"Bienvenido " +
-
-			usuario.nombre
-		);
-
-		window.location.href =
-		"menu.jsp";
-
-	}else{
-
-		alert(
-			"Correo o password incorrectos"
+			"Error del sistema"
 		);
 	}
 }
@@ -429,47 +447,86 @@ async function registrar(){
 	const usuario = {
 
 		nombre:
-		document.getElementById("nombreRegistro").value,
+		document.getElementById(
+			"nombreRegistro"
+		).value.trim(),
 
 		correo:
-		document.getElementById("correoRegistro").value,
+		document.getElementById(
+			"correoRegistro"
+		).value.trim(),
 
 		password:
-		document.getElementById("passwordRegistro").value,
+		document.getElementById(
+			"passwordRegistro"
+		).value.trim(),
 
 		departamento:
-		document.getElementById("departamentoRegistro").value,
+		document.getElementById(
+			"departamentoRegistro"
+		).value.trim(),
 
 		rol:
-		document.getElementById("rolRegistro").value
+		document.getElementById(
+			"rolRegistro"
+		).value
 	};
 
-	const respuesta =
-	await fetch(
+	if(
+		usuario.nombre == "" ||
+		usuario.correo == "" ||
+		usuario.password == "" ||
+		usuario.departamento == ""
+	){
 
-		URL_USUARIOS,
+		alert(
+			"Complete todos los campos"
+		);
 
-		{
+		return;
+	}
 
-			method:"POST",
+	try{
 
-			headers:{
-				"Content-Type":"application/json"
-			},
+		const respuesta =
+		await fetch(
 
-			body: JSON.stringify(usuario)
+			URL_USUARIOS,
+
+			{
+
+				method:"POST",
+
+				headers:{
+					"Content-Type":"application/json"
+				},
+
+				body: JSON.stringify(usuario)
+			}
+		);
+
+		if(respuesta.ok){
+
+			alert(
+				"Usuario registrado"
+			);
+
+			mostrarLogin();
+
+		}else{
+
+			alert(
+				"Error registrando usuario"
+			);
 		}
-	);
 
-	if(respuesta.ok){
+	}catch(error){
 
-		alert("Usuario registrado");
+		console.log(error);
 
-		mostrarLogin();
-
-	}else{
-
-		alert("Error registrando usuario");
+		alert(
+			"Error del sistema"
+		);
 	}
 }
 
@@ -483,14 +540,17 @@ async function recuperarPassword(){
 	const correo =
 	document.getElementById(
 		"correoRecuperar"
-	).value;
+	).value.trim();
 
 	const nuevaPassword =
 	document.getElementById(
 		"nuevaPassword"
-	).value;
+	).value.trim();
 
-	if(correo == "" || nuevaPassword == ""){
+	if(
+		correo == "" ||
+		nuevaPassword == ""
+	){
 
 		alert(
 			"Complete todos los campos"
@@ -501,55 +561,22 @@ async function recuperarPassword(){
 
 	try{
 
-		// BUSCAR USUARIOS
-		const respuestaUsuarios =
-		await fetch(URL_USUARIOS);
-
-		const usuarios =
-		await respuestaUsuarios.json();
-
-		// BUSCAR CORREO
-		const usuario =
-		usuarios.find(function(u){
-
-			return u.correo == correo;
-		});
-
-		if(!usuario){
-
-			alert("Correo no encontrado");
-
-			return;
-		}
-
-		// ACTUALIZAR PASSWORD
 		const respuesta =
 		await fetch(
 
-			URL_USUARIOS + "/" + usuario.id,
+			URL_USUARIOS +
+			"/password/" +
+			correo,
 
 			{
 
 				method:"PUT",
 
 				headers:{
-					"Content-Type":"application/json"
+					"Content-Type":"text/plain"
 				},
 
-				body: JSON.stringify({
-
-					nombre: usuario.nombre,
-
-					correo: usuario.correo,
-
-					departamento:
-					usuario.departamento,
-
-					rol: usuario.rol,
-
-					password:
-					nuevaPassword
-				})
+				body: nuevaPassword
 			}
 		);
 
@@ -558,6 +585,14 @@ async function recuperarPassword(){
 			alert(
 				"Contraseña actualizada"
 			);
+
+			document.getElementById(
+				"correoRecuperar"
+			).value = "";
+
+			document.getElementById(
+				"nuevaPassword"
+			).value = "";
 
 			cerrarModal();
 
@@ -572,7 +607,9 @@ async function recuperarPassword(){
 
 		console.log(error);
 
-		alert("Error del sistema");
+		alert(
+			"Error del sistema"
+		);
 	}
 }
 

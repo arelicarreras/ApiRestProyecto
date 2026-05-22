@@ -45,6 +45,10 @@ button{
 	background:#17a2b8;
 }
 
+.descargar{
+	background:#28a745;
+}
+
 .menu{
 	background:#343a40;
 }
@@ -123,6 +127,7 @@ onclick="listar()">
 <th>Archivo</th>
 <th>Ruta</th>
 <th>Ticket</th>
+<th>Descargar</th>
 
 </tr>
 
@@ -143,6 +148,24 @@ onclick="listar()">
 
 const URL =
 "/api/adjuntos";
+
+
+// =====================================
+// VALIDAR SESION
+// =====================================
+
+const usuario =
+JSON.parse(
+	localStorage.getItem("usuarioLogueado")
+);
+
+if(!usuario){
+
+	alert("Debe iniciar sesion");
+
+	window.location.href =
+	"login.jsp";
+}
 
 
 // =====================================
@@ -205,6 +228,21 @@ async function subir(){
 
 
 // =====================================
+// DESCARGAR
+// =====================================
+
+function descargar(id){
+
+	window.open(
+
+		URL + "/descargar/" + id,
+
+		"_blank"
+	);
+}
+
+
+// =====================================
 // LISTAR
 // =====================================
 
@@ -217,6 +255,21 @@ async function listar(){
 	await respuesta.json();
 
 	let html = "";
+
+	if(datos.length == 0){
+
+		html =
+
+		"<tr>" +
+
+			"<td colspan='5'>" +
+
+				"No hay adjuntos" +
+
+			"</td>" +
+
+		"</tr>";
+	}
 
 	datos.forEach(function(a){
 
@@ -235,9 +288,25 @@ async function listar(){
 		"</td>" +
 
 		"<td>" +
-		(a.ticket
-			? a.ticket.codigo
-			: "") +
+
+			(a.ticket
+				? a.ticket.codigo
+				: "") +
+
+		"</td>" +
+
+		"<td>" +
+
+			"<button " +
+
+			"class='descargar' " +
+
+			"onclick='descargar(" + a.id + ")'>" +
+
+				"Descargar" +
+
+			"</button>" +
+
 		"</td>" +
 
 		"</tr>";

@@ -179,46 +179,55 @@ button:hover{
 <script>
 
 // =====================================
-// USUARIO LOGUEADO
-// =====================================
-
-const usuario =
-JSON.parse(
-	localStorage.getItem("usuarioLogueado")
-);
-
-
-// =====================================
 // VALIDAR SESION
 // =====================================
 
-if(!usuario){
+try{
 
-	alert("Debe iniciar sesion");
+	const usuario =
+	JSON.parse(
+		localStorage.getItem(
+			"usuarioLogueado"
+		)
+	);
+
+	if(!usuario){
+
+		alert("Debe iniciar sesion");
+
+		window.location.href =
+		"login.jsp";
+	}
+
+
+	// =====================================
+	// MOSTRAR DATOS
+	// =====================================
+
+	document.getElementById(
+		"nombreUsuario"
+	).innerHTML =
+	usuario.nombre;
+
+	document.getElementById(
+		"correoUsuario"
+	).innerHTML =
+	usuario.correo;
+
+	document.getElementById(
+		"rolUsuario"
+	).innerHTML =
+	usuario.rol;
+
+}catch(error){
+
+	console.log(error);
+
+	alert("Sesion invalida");
 
 	window.location.href =
 	"login.jsp";
 }
-
-
-// =====================================
-// MOSTRAR DATOS
-// =====================================
-
-document.getElementById(
-	"nombreUsuario"
-).innerHTML =
-usuario.nombre;
-
-document.getElementById(
-	"correoUsuario"
-).innerHTML =
-usuario.correo;
-
-document.getElementById(
-	"rolUsuario"
-).innerHTML =
-usuario.rol;
 
 
 // =====================================
@@ -227,12 +236,8 @@ usuario.rol;
 
 function logout(){
 
-	// ELIMINAR SESION
-	localStorage.removeItem(
-		"usuarioLogueado"
-	);
+	localStorage.clear();
 
-	// REDIRECCIONAR
 	window.location.href =
 	"login.jsp";
 }
