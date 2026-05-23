@@ -204,3 +204,11 @@ mvn clean package -DskipTests
 # Autor
 
 Proyecto académico desarrollado para gestión de tickets de soporte técnico.
+
+## Integrantes del Grupo
+
+- Gilma Areli Carrera Samayoa — Carnet: 2490-24-21186
+- Heidy Asenet Hernández García — Carnet: 2490-24-17166
+- Ana Sofia Hernández Martínez — Carnet: 2490-24-20899
+- Roselin Anyeli Bolvito Ortiz — Carnet: 2490-24-8458
+- Jordy Andres Luna Flores — Carnet: 2490-24-16009
